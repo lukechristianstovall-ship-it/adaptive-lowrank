@@ -3,26 +3,32 @@ import numpy as np
 def _random_selection(
     X, n_clusters, random_state
 ):
-    """Random selection of n_clusters centers from X.
+    """Random low-rank initializer that selects centers uniformly from X.
+
+    This function chooses n_clusters distinct points at random from X and
+    updates the residual by projecting out the selected centers.
 
     Parameters
     ----------
     X : {ndarray, sparse matrix} of shape (n_samples, n_features)
-        The initial data.
+        Input data matrix.
 
     n_clusters : int
-        The number of clusters to choose.
+        Number of centers to choose.
 
     random_state : RandomState instance
-        The generator used to initialize the centers.
+        Random number generator used to sample the centers.
 
     Returns
     -------
     centers : ndarray of shape (n_clusters, n_features)
-        The randomly selected centers.
+        The selected centers from X.
 
     indices : ndarray of shape (n_clusters,)
-        The index location of the chosen centers in the data array X.
+        The indices of the chosen centers in X.
+
+    residuals : list of float
+        Frobenius norm of the residual after each center selection.
     """
     R = X.copy()
     n_samples, n_features = X.shape

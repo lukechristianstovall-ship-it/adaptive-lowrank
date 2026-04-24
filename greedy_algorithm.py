@@ -2,35 +2,34 @@ import numpy as np
 import time
 
 def _greedy_algorithm(
-    X, n_clusters, random_state
+    X, n_clusters
 ):
-    """Low-rank matrix version of kmeans_plusplus intializer.
+    """Greedy low-rank initializer for k-means-like selection.
+
+    This function selects points iteratively to minimize the Frobenius norm of
+    the residual matrix after projecting onto chosen centers.
 
     Parameters
     ----------
     X : {ndarray, sparse matrix} of shape (n_samples, n_features)
-        The intial data.
+        Input data matrix.
 
     n_clusters : int
-        The number of seeds to choose.
-
-    random_state : RandomState instance
-        The generator used to initialize the centers.
-
-    n_local_trials : int, default=None
-        The number of seeding trials for each center,
-        of which the one reducing the residual the most is chosen.
-        Set to None to make the number of trials depend logarithmically
-        on the number of seeds (2+log(k)).
+        Number of centers to choose.
 
     Returns
     -------
     centers : ndarray of shape (n_clusters, n_features)
-        The initial centers for k-means.
+        The selected centers from X.
 
     indices : ndarray of shape (n_clusters,)
-        The index location of the chosen centers in the data array X. For a
-        given index and center, X[index] = center.
+        The indices of the chosen centers in X.
+
+    residuals : list of float
+        Frobenius norm of the residual after each center selection.
+
+    times : list of float
+        Elapsed time at each selection step.
     """
     R = X.copy()
     n_samples, n_features = X.shape

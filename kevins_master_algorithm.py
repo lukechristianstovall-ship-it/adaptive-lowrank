@@ -4,33 +4,40 @@ import time
 def _kevins_algorithm(
     X, n_clusters, random_state, n_local_trials=None
 ):
-    """Low-rank matrix version of kmeans_plusplus intializer.
+    """Low-rank initializer using weighted candidate sampling.
+
+    This algorithm samples candidate points with probability proportional to
+    the squared norm of the current residual rows, then chooses the best
+    candidate based on projected residual reduction.
 
     Parameters
     ----------
     X : {ndarray, sparse matrix} of shape (n_samples, n_features)
-        The intial data.
+        Input data matrix.
 
     n_clusters : int
-        The number of seeds to choose.
+        Number of centers to choose.
 
     random_state : RandomState instance
-        The generator used to initialize the centers.
+        Random number generator used to sample candidate points.
 
     n_local_trials : int, default=None
-        The number of seeding trials for each center,
-        of which the one reducing the residual the most is chosen.
-        Set to None to make the number of trials depend logarithmically
-        on the number of seeds (2+log(k)).
+        Number of random candidates to consider at each iteration. If None,
+        the value is set to 2 + log(n_clusters).
 
     Returns
     -------
     centers : ndarray of shape (n_clusters, n_features)
-        The initial centers for k-means.
+        The selected centers from X.
 
     indices : ndarray of shape (n_clusters,)
-        The index location of the chosen centers in the data array X. For a
-        given index and center, X[index] = center.
+        The indices of the chosen centers in X.
+
+    residuals : list of float
+        Frobenius norm of the residual after each center selection.
+
+    times : list of float
+        Elapsed time at each selection step.
     """
     R = X.copy()
     n_samples, n_features = X.shape
